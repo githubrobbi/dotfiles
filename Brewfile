@@ -1,0 +1,6 @@
+brew "git"
+brew "stow"
+brew "gh"
+brew "zsh"
+brew "powerlevel10k"
+cask "visual-studio-code"
