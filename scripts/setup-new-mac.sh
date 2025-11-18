@@ -35,7 +35,20 @@ fi
 echo ""
 echo "📦 Installing packages from Brewfile..."
 cd "$DOTFILES_DIR"
-brew bundle --file=./Brewfile
+
+# Check if this is a fresh Mac or existing setup
+if [ -f "$DOTFILES_DIR/scripts/generate-brewfile-current.sh" ]; then
+    echo "  → Generating Brewfile.current (smart detection of installed packages)..."
+    "$DOTFILES_DIR/scripts/generate-brewfile-current.sh"
+
+    echo ""
+    echo "  → Installing only missing packages..."
+    brew bundle --file=./Brewfile.current
+else
+    # Fallback to full Brewfile if script doesn't exist
+    echo "  → Installing from Brewfile (full install)..."
+    brew bundle --file=./Brewfile
+fi
 
 # ============================================================================
 # 3. Stow dotfiles
@@ -101,9 +114,32 @@ else
     echo "  ✅ Rust already installed ($(rustc --version))"
 fi
 
-# Install common Rust tools
-echo "  → Installing Rust CLI tools..."
-cargo install cargo-watch cargo-edit cargo-outdated cargo-audit 2>/dev/null || true
+# Install common Rust tools (cargo-first philosophy)
+echo "  → Installing essential Rust CLI tools via cargo..."
+echo "     This may take a while (compiling from source)..."
+
+# Essential cargo tools
+CARGO_TOOLS=(
+    "cargo-watch"          # Auto-rebuild on file changes
+    "cargo-edit"           # Add/remove dependencies from CLI
+    "cargo-outdated"       # Check for outdated dependencies
+    "cargo-audit"          # Security audit
+    "cargo-nextest"        # Better test runner
+    "cargo-llvm-cov"       # Code coverage
+    "sccache"              # Compiler cache
+    "cargo-deny"           # Dependency linter
+    "rust-script"          # Run Rust files as scripts
+)
+
+for tool in "${CARGO_TOOLS[@]}"; do
+    tool_name=$(echo "$tool" | awk '{print $1}')
+    if ! cargo install --list | grep -q "^${tool_name} "; then
+        echo "     → Installing ${tool_name}..."
+        cargo install "$tool_name" 2>/dev/null || echo "       ⚠️  Failed to install ${tool_name}"
+    else
+        echo "     ✅ ${tool_name} already installed"
+    fi
+done
 
 # ============================================================================
 # 7. Node.js Setup
@@ -121,7 +157,30 @@ if command -v node &> /dev/null; then
 fi
 
 # ============================================================================
-# 8. macOS Defaults
+# 8. Python Setup
+# ============================================================================
+echo ""
+echo "🐍 Setting up Python..."
+
+if command -v python3 &> /dev/null; then
+    echo "  ✅ Python $(python3 --version) installed"
+
+    # Install essential Python packages
+    echo "  → Installing essential Python packages..."
+    python3 -m pip install --upgrade pip setuptools wheel 2>/dev/null || true
+    python3 -m pip install --user pipx 2>/dev/null || true
+
+    # Ensure pipx is in PATH
+    if command -v pipx &> /dev/null; then
+        pipx ensurepath 2>/dev/null || true
+        echo "  ✅ pipx installed (for isolated Python tools)"
+    fi
+else
+    echo "  ⚠️  Python not found. Install with: brew install python@3.14"
+fi
+
+# ============================================================================
+# 9. macOS Defaults
 # ============================================================================
 echo ""
 echo "🍎 Configuring macOS defaults..."
@@ -148,7 +207,7 @@ killall Finder 2>/dev/null || true
 echo "  ✅ macOS defaults configured"
 
 # ============================================================================
-# 9. iTerm2 Configuration
+# 10. iTerm2 Configuration
 # ============================================================================
 echo ""
 echo "🖥️  iTerm2 Configuration..."
@@ -165,14 +224,35 @@ fi
 # Done!
 # ============================================================================
 echo ""
-echo "================================"
-echo "✅ Setup Complete!"
+echo "╔══════════════════════════════════════════════════════════════════════════╗"
+echo "║                    ✅ SETUP COMPLETE!                                    ║"
+echo "╚══════════════════════════════════════════════════════════════════════════╝"
 echo ""
-echo "Next steps:"
-echo "  1. Restart your terminal"
-echo "  2. Configure iTerm2 preferences (if using iTerm2)"
-echo "  3. Add your SSH key to GitHub: gh ssh-key add ~/.ssh/id_ed25519.pub"
-echo "  4. Review and customize ~/.zshenv.local for machine-specific settings"
+echo "📋 What was installed:"
+echo "   ✅ Homebrew packages (via smart Brewfile.current)"
+echo "   ✅ Rust toolchain + cargo tools"
+echo "   ✅ Node.js + global packages"
+echo "   ✅ Python + pip/pipx"
+echo "   ✅ Dotfiles symlinked via stow"
+echo "   ✅ Git configured with SSH signing"
+echo "   ✅ macOS defaults optimized"
 echo ""
-echo "Enjoy your new Mac! 🎉"
+echo "🔄 Next steps:"
+echo "   1. Restart your terminal (or run: exec zsh)"
+echo "   2. Configure iTerm2 preferences:"
+echo "      → Preferences → General → Preferences"
+echo "      → Load preferences from: ~/.config/iterm2"
+echo "   3. Add SSH key to GitHub:"
+echo "      → gh ssh-key add ~/.ssh/id_ed25519.pub"
+echo "   4. Review machine-specific settings:"
+echo "      → ~/.zshenv.local (create if needed)"
+echo ""
+echo "📚 Useful commands:"
+echo "   → Update all tools:  ./scripts/update-all.sh"
+echo "   → Check what's installed: ./scripts/generate-brewfile-current.sh"
+echo "   → Rust tools: cargo install --list"
+echo "   → Brew tools: brew list"
+echo ""
+echo "🎉 Enjoy your new Mac setup!"
+echo ""
 

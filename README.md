@@ -11,7 +11,30 @@ Personal dotfiles for macOS development environment. Symlinked with GNU Stow.
 
 ## Quick Setup
 
-### New Mac (Complete Setup)
+### New Mac (Automated - Recommended!)
+```bash
+# 1. Clone this repo
+git clone git@github.com:githubrobbi/dotfiles.git ~/dotfiles
+cd ~/dotfiles
+
+# 2. Run the setup script (does everything!)
+./scripts/setup-new-mac.sh
+```
+
+**What the setup script does:**
+1. ✅ Installs Homebrew (if needed)
+2. ✅ Generates Brewfile.current (smart detection)
+3. ✅ Installs only missing brew packages
+4. ✅ Symlinks dotfiles via stow
+5. ✅ Configures Git with SSH signing
+6. ✅ Installs Rust toolchain (via rustup)
+7. ✅ Installs all cargo tools (cargo-first!)
+8. ✅ Sets up Node.js + global packages
+9. ✅ Sets up Python + pip/pipx
+10. ✅ Configures macOS defaults
+11. ✅ Configures iTerm2
+
+### New Mac (Manual Setup)
 ```bash
 # Install Homebrew
 /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
@@ -27,8 +50,8 @@ brew bundle --file=Brewfile.superset
 # Install Rust (if not via brew)
 curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh
 
-# Install cargo tools
-cargo install cargo-watch cargo-edit cargo-outdated cargo-audit
+# Install cargo tools (see Brewfile.superset for full list)
+cargo install cargo-watch cargo-edit cargo-outdated cargo-audit cargo-nextest cargo-llvm-cov sccache cargo-deny rust-script
 
 # Stow dotfiles
 stow zsh git bash npm yarn vscode
@@ -54,8 +77,9 @@ brew bundle --file=Brewfile.current
 - **Brewfile.superset** - Complete tool list for brand new Mac (same as Brewfile)
 - **Brewfile.current** - AUTO-GENERATED minimal additions for existing setup
 - **README-TOOLS.md** - Comprehensive tool reference guide
+- **scripts/setup-new-mac.sh** - 🎯 **Main setup script** (orchestrates everything)
 - **scripts/generate-brewfile-current.sh** - Smart script to generate Brewfile.current
-- **scripts/setup-new-mac.sh** - Automated setup script
+- **scripts/update-all.sh** - Update all tools (brew, rust, cargo, node, python)
 
 ## How It Works
 
@@ -109,6 +133,21 @@ This approach:
 
 ## Updating
 
+### Update Everything (Automated)
+```bash
+# Update all tools at once
+./scripts/update-all.sh
+```
+
+This updates:
+- ✅ Homebrew packages
+- ✅ Rust toolchain
+- ✅ All cargo tools
+- ✅ Node.js packages (npm/yarn/pnpm)
+- ✅ Python packages (pip/pipx)
+- ✅ App Store apps (if mas installed)
+
+### Update Manually
 ```bash
 # Update Homebrew packages
 brew update && brew upgrade
@@ -116,8 +155,12 @@ brew update && brew upgrade
 # Update Rust toolchain
 rustup update
 
-# Update cargo tools
-cargo install-update -a  # requires: cargo install cargo-update
+# Update cargo tools (one by one)
+cargo install <tool-name> --force
+
+# Or install cargo-update for batch updates
+cargo install cargo-update
+cargo install-update -a
 ```
 
 ## Git Signing
