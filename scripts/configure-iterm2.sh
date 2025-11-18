@@ -125,26 +125,52 @@ defaults write com.googlecode.iterm2 "Use Italic Font" -bool true
 log_success "Font configured: $FONT_NAME $FONT_SIZE"
 
 # ============================================================================
-# 4. Additional iTerm2 Settings
+# 4. Additional iTerm2 Settings (Optimized for Heavy Development)
 # ============================================================================
 echo ""
-log_info "Applying additional iTerm2 settings..."
+log_info "Applying iTerm2 settings for heavy development work..."
 
-# Scrollback
-defaults write com.googlecode.iterm2 "Scrollback Lines" -int 10000
+# Scrollback - UNLIMITED for long Maven/Gradle builds, Rust compilation, logs
+defaults write com.googlecode.iterm2 "Scrollback Lines" -int 0
 defaults write com.googlecode.iterm2 "Unlimited Scrollback" -bool true
-log_success "Scrollback: Unlimited"
+defaults write com.googlecode.iterm2 "Scrollback With Status Bar" -bool false
+defaults write com.googlecode.iterm2 "Scrollback in Alternate Screen" -bool true
+log_success "Scrollback: Unlimited (optimized for long builds)"
 
-# Window settings
+# Window settings - Larger for split panes and multiple terminals
 defaults write com.googlecode.iterm2 "Window Type" -int 0
-defaults write com.googlecode.iterm2 "Columns" -int 120
-defaults write com.googlecode.iterm2 "Rows" -int 35
-log_success "Window size: 120x35"
+defaults write com.googlecode.iterm2 "Columns" -int 140
+defaults write com.googlecode.iterm2 "Rows" -int 40
+log_success "Window size: 140x40 (larger for development)"
+
+# Performance - Handle large output from builds
+defaults write com.googlecode.iterm2 "UseLowFiForASCIIInput" -bool false
+defaults write com.googlecode.iterm2 "Redraw On Key Down" -bool true
+defaults write com.googlecode.iterm2 "Disable Potentially Insecure Escape Sequences" -bool false
+log_success "Performance optimized for heavy output"
+
+# Session restoration - Restore after crashes during long builds
+defaults write com.googlecode.iterm2 "OpenArrangementAtStartup" -bool false
+defaults write com.googlecode.iterm2 "OpenBookmark" -bool false
+defaults write com.googlecode.iterm2 "OpenNoWindowsAtStartup" -bool false
+log_success "Session settings configured"
 
 # Disable annoying features
 defaults write com.googlecode.iterm2 "PromptOnQuit" -bool false
 defaults write com.googlecode.iterm2 "OnlyWhenMoreTabs" -bool true
-log_success "Disabled quit confirmation"
+defaults write com.googlecode.iterm2 "SuppressRestartAnnouncement" -bool true
+log_success "Disabled quit confirmation and restart announcements"
+
+# Copy/Paste - Better for code snippets
+defaults write com.googlecode.iterm2 "CopyLastNewline" -bool false
+defaults write com.googlecode.iterm2 "TrimWhitespaceOnCopy" -bool true
+defaults write com.googlecode.iterm2 "TripleClickSelectsFullWrappedLines" -bool true
+log_success "Copy/paste optimized for code"
+
+# Mouse - Better for clicking URLs in build output
+defaults write com.googlecode.iterm2 "CommandSelection" -bool true
+defaults write com.googlecode.iterm2 "ThreeFingerEmulates" -bool false
+log_success "Mouse settings configured"
 
 # ============================================================================
 # 5. Check Powerlevel10k Configuration
@@ -192,8 +218,11 @@ echo ""
 log_info "What was configured:"
 echo "   ✅ Font: $FONT_NAME $FONT_SIZE"
 echo "   ✅ Non-ASCII font: Disabled"
-echo "   ✅ Scrollback: Unlimited"
-echo "   ✅ Window size: 120x35"
+echo "   ✅ Scrollback: Unlimited (optimized for long builds)"
+echo "   ✅ Window size: 140x40 (larger for development)"
+echo "   ✅ Performance: Optimized for heavy output"
+echo "   ✅ Copy/paste: Optimized for code"
+echo "   ✅ Mouse: Command-click URLs enabled"
 echo "   ✅ Quit confirmation: Disabled"
 echo ""
 

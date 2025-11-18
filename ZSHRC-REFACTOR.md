@@ -177,14 +177,10 @@ path_append()  { [[ -d "$1" ]] && path+=("$1") }
 
 ## 🚀 Migration Steps
 
-### 1. **Backup Current Config**
+### 1. **Review New Config**
 ```bash
 cd ~/dotfiles
-cp zsh/.zshrc zsh/.zshrc.backup
-```
 
-### 2. **Review New Config**
-```bash
 # Compare old vs new
 diff zsh/.zshrc zsh/.zshrc.new
 
@@ -194,47 +190,69 @@ cat zsh/.config/zsh/aliases.zsh
 cat zsh/.config/zsh/work.zsh
 ```
 
-### 3. **Test New Config (Safe)**
+### 2. **Test New Config (Safe)**
 ```bash
 # Test in a new shell without replacing
 zsh -c 'source ~/dotfiles/zsh/.zshrc.new'
 ```
 
-### 4. **Apply New Config**
+### 3. **Apply New Config**
+
+**Important:** Since you're using GNU Stow, your files are **symlinked**, not copied. So we just need to replace the file in the dotfiles repo, and the symlink will automatically point to the new version!
+
 ```bash
 cd ~/dotfiles
 
-# Replace old with new
+# Step 1: Backup old config (in dotfiles repo)
 mv zsh/.zshrc zsh/.zshrc.old
+
+# Step 2: Replace with new config (in dotfiles repo)
 mv zsh/.zshrc.new zsh/.zshrc
 
-# Stow the new modular configs
+# Step 3: Re-stow to create symlinks for new modular files
+# (This creates symlinks for the new .config/zsh/ files)
 stow -R zsh
 
-# Reload shell
+# Step 4: Reload shell
 exec zsh
 ```
 
-### 5. **Verify Everything Works**
+**Why `stow -R zsh`?** Normally you don't need to re-stow because symlinks already exist. But this time we're adding NEW files (ssh-agent.zsh, aliases.zsh, work.zsh, ripgrep/config) that need symlinks created.
+
+### 4. **Verify Everything Works**
 ```bash
+# Verify symlinks
+ls -la ~/.zshrc
+ls -la ~/.config/zsh/
+ls -la ~/.config/ripgrep/
+
 # Test modern tools
 z dotfiles        # zoxide
-fzf              # fuzzy finder
-bat README.md    # bat
-eza -la          # eza
-rg "test"        # ripgrep
-
-# Test aliases
-ll               # eza -l
-cat README.md    # bat
+ll                # eza -l
+cat README.md     # bat
+rg "test"         # ripgrep
 
 # Test work functions
-tt-sbx           # TTAPI sandbox
-spend_cd         # Spend Management
+tt-sbx            # TTAPI sandbox
+spend_cd          # Spend Management
 
 # Test SSH agent
-ssh-add -l       # Should show keys
+ssh-add -l        # Should show keys
 ```
+
+### 5. **Future Edits (After Migration)**
+
+After this one-time migration, you can edit any file in `~/dotfiles/zsh/` and the changes will be **immediately active** (no need to stow again):
+
+```bash
+cd ~/dotfiles
+vim zsh/.zshrc                        # Edit main config
+vim zsh/.config/zsh/aliases.zsh       # Add new aliases
+vim zsh/.config/zsh/work.zsh          # Add work functions
+source ~/.zshrc                       # Reload (or exec zsh)
+```
+
+The symlinks ensure your home directory always points to the latest version in your dotfiles repo!
 
 ## 🎓 New Features to Learn
 
