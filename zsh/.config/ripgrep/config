@@ -1,0 +1,37 @@
+# ripgrep configuration
+# See: https://github.com/BurntSushi/ripgrep/blob/master/GUIDE.md
+
+# Search hidden files and directories
+--hidden
+
+# Follow symbolic links
+--follow
+
+# Smart case (case-insensitive unless pattern contains uppercase)
+--smart-case
+
+# Sort by file path
+--sort=path
+
+# Use colors
+--colors=line:fg:yellow
+--colors=line:style:bold
+--colors=path:fg:green
+--colors=path:style:bold
+--colors=match:fg:black
+--colors=match:bg:yellow
+--colors=match:style:nobold
+
+# Ignore patterns
+--glob=!.git/*
+--glob=!node_modules/*
+--glob=!target/*
+--glob=!build/*
+--glob=!dist/*
+--glob=!.next/*
+--glob=!.cache/*
+--glob=!*.lock
+--glob=!package-lock.json
+--glob=!yarn.lock
+--glob=!Cargo.lock
+
