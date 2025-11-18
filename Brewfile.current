@@ -1,0 +1,62 @@
+# ============================================================================
+# Brewfile CURRENT - Minimal additions for existing setup
+# ============================================================================
+# This only includes what's MISSING from the current system.
+# Based on: brew list --formula && brew list --cask
+# ============================================================================
+
+# ============================================================================
+# Missing GUI Applications
+# ============================================================================
+
+# cask "docker"        # ALREADY INSTALLED (not via brew) - /usr/local/bin/docker
+cask "rectangle"       # Window management - NOT installed
+# cask "alfred"        # Optional - uncomment if wanted
+# cask "obsidian"      # Optional - uncomment if wanted
+
+# ============================================================================
+# Missing Fonts
+# ============================================================================
+# Note: homebrew/cask-fonts tap is deprecated, fonts are now in homebrew/cask
+
+cask "font-fira-code-nerd-font"      # NOT installed
+cask "font-jetbrains-mono-nerd-font" # NOT installed
+cask "font-meslo-lg-nerd-font"       # NOT installed (recommended for p10k)
+cask "font-hack-nerd-font"           # NOT installed
+
+# ============================================================================
+# Fix: Replace deprecated exa with eza
+# ============================================================================
+# Note: exa is deprecated, need to install eza instead
+brew "eza"             # Better ls (exa fork, maintained)
+
+# ============================================================================
+# Optional: Build tools for Rust development
+# ============================================================================
+brew "cmake"           # NOT installed - useful for Rust projects
+brew "pkg-config"      # NOT installed - useful for Rust projects
+
+# ============================================================================
+# Everything else is ALREADY INSTALLED via brew:
+# ============================================================================
+# ✅ git, gh, git-delta, zsh, powerlevel10k, starship, stow
+# ✅ bat, fd, ripgrep, sd, procs, bottom, dust, tokei, hyperfine, zoxide
+# ✅ fzf, jq, yq, tree, wget, curl, htop, tmux, neovim
+# ✅ node, python@3.12, go
+# ✅ gnupg, gopass, age, sops
+# ✅ autojump, tldr, direnv
+# ✅ iterm2, visual-studio-code
+
+# ============================================================================
+# Rust toolchain is ALREADY INSTALLED via rustup:
+# ============================================================================
+# ✅ rustc, cargo, rustup at ~/.cargo/bin/
+# ✅ Cargo tools: cargo-deny, cargo-llvm-cov, cargo-nextest, rust-script, sccache
+
+# ============================================================================
+# To install missing cargo tools (run separately):
+# ============================================================================
+# cargo install cargo-watch          # Auto-rebuild on file changes
+# cargo install cargo-edit            # Add/remove dependencies from CLI
+# cargo install cargo-outdated        # Check for outdated dependencies
+# cargo install cargo-audit           # Security audit
