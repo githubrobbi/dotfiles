@@ -3,6 +3,10 @@
 # ============================================================================
 # This only includes what's MISSING from the current system.
 # Based on: brew list --formula && brew list --cask
+#
+# IMPORTANT: Brewfiles only check brew's database, not system binaries.
+# If a tool is installed outside brew, brew will try to install it anyway.
+# This file manually excludes tools we know are installed outside brew.
 # ============================================================================
 
 # ============================================================================
@@ -42,7 +46,7 @@ brew "pkg-config"      # NOT installed - useful for Rust projects
 # ✅ git, gh, git-delta, zsh, powerlevel10k, starship, stow
 # ✅ bat, fd, ripgrep, sd, procs, bottom, dust, tokei, hyperfine, zoxide
 # ✅ fzf, jq, yq, tree, wget, curl, htop, tmux, neovim
-# ✅ node, python@3.12, go
+# ✅ node, python@3.12, python@3.14, go
 # ✅ gnupg, gopass, age, sops
 # ✅ autojump, tldr, direnv
 # ✅ iterm2, visual-studio-code

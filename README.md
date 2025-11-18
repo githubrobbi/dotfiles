@@ -72,7 +72,7 @@ brew bundle --file=Brewfile.current  # Only install missing tools
 - bat, eza, fd, ripgrep, sd, procs, bottom, dust, tokei, hyperfine, zoxide
 
 ### Languages & Runtimes
-- Node.js, Python 3.12, Go
+- Node.js, Python 3.14, Go
 
 ### Security & Secrets
 - gnupg, gopass, age, sops

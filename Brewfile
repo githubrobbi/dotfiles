@@ -1,4 +1,11 @@
 # ============================================================================
+# Brewfile - Complete Setup for Brand New Mac
+# ============================================================================
+# Assumes NOTHING is installed - this is a fresh Mac.
+# Brewfiles only check brew's database, not system binaries.
+# ============================================================================
+
+# ============================================================================
 # Core Development Tools
 # ============================================================================
 
@@ -19,7 +26,9 @@ brew "stow"            # Dotfile symlink manager
 # Rust Development Ecosystem
 # ============================================================================
 
-brew "rustup-init"     # Rust toolchain installer (if not using rustup.rs)
+# Rust toolchain - RECOMMENDED: Install via rustup.rs instead of brew
+# curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh
+# brew "rustup-init"   # Alternative: install via brew (not recommended)
 
 # Rust-powered CLI tools (modern replacements)
 brew "bat"             # Better cat with syntax highlighting
@@ -57,7 +66,7 @@ brew "neovim"          # Modern vim
 # ============================================================================
 
 brew "node"            # Node.js
-brew "python@3.12"
+brew "python@3.14"     # Python 3.14 (latest)
 brew "go"              # Go language
 
 # ============================================================================
@@ -81,12 +90,12 @@ brew "direnv"          # Per-directory environment variables
 # GUI Applications (Casks)
 # ============================================================================
 
-cask "iterm2"          # Better terminal
+cask "iterm2"          # Best terminal for macOS
 cask "visual-studio-code"
-cask "docker"          # Docker Desktop
-cask "rectangle"       # Window management
-cask "alfred"          # Spotlight replacement (optional)
-cask "obsidian"        # Note-taking (optional)
+cask "docker"          # Docker Desktop (NOTE: may conflict if installed outside brew)
+cask "rectangle"       # Window management (free)
+# cask "alfred"        # Spotlight replacement (optional)
+# cask "obsidian"      # Note-taking (optional)
 
 # ============================================================================
 # Fonts (for iTerm2 & terminal)

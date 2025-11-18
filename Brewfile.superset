@@ -2,7 +2,11 @@
 # Brewfile SUPERSET - Complete Setup for Brand New Mac
 # ============================================================================
 # This is the comprehensive list for setting up a new Mac from scratch.
+# Assumes NOTHING is installed - this is a fresh Mac.
 # Includes everything a dotfiles master + Rust developer + iTerm2 specialist needs.
+#
+# IMPORTANT: Brewfiles only check brew's database, not system binaries.
+# If a tool is installed outside brew, brew will try to install it anyway.
 # ============================================================================
 
 # ============================================================================
@@ -27,8 +31,9 @@ brew "stow"            # Dotfile symlink manager
 # ============================================================================
 # NOTE: Prefer cargo for Rust tools, but brew is acceptable for system-wide tools
 
-# Rust toolchain (only if not using rustup.rs directly)
-# brew "rustup-init"   # SKIP - use rustup.rs instead: curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh
+# Rust toolchain - RECOMMENDED: Install via rustup.rs instead of brew
+# curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh
+# brew "rustup-init"   # Alternative: install via brew (not recommended)
 
 # Rust-powered CLI tools (can be installed via cargo OR brew)
 # Prefer cargo for these, but brew is fine for convenience
@@ -67,7 +72,7 @@ brew "neovim"          # Modern vim
 # ============================================================================
 
 brew "node"            # Node.js
-brew "python@3.12"
+brew "python@3.14"     # Python 3.14 (latest)
 brew "go"              # Go language
 
 # ============================================================================
@@ -93,10 +98,10 @@ brew "direnv"          # Per-directory environment variables
 
 cask "iterm2"          # Best terminal for macOS
 cask "visual-studio-code"
-cask "docker"          # Docker Desktop
+cask "docker"          # Docker Desktop (NOTE: may conflict if installed outside brew)
 cask "rectangle"       # Window management (free)
-cask "alfred"          # Spotlight replacement (optional)
-cask "obsidian"        # Note-taking (optional)
+# cask "alfred"        # Spotlight replacement (optional)
+# cask "obsidian"      # Note-taking (optional)
 
 # ============================================================================
 # Fonts (Nerd Fonts for terminal icons)
