@@ -214,8 +214,18 @@ echo "🖥️  iTerm2 Configuration..."
 
 if [ -d "/Applications/iTerm.app" ]; then
     echo "  ✅ iTerm2 installed"
-    echo "  → Configure iTerm2 to load preferences from: ~/.config/iterm2"
-    echo "     (Preferences → General → Preferences → Load preferences from custom folder)"
+
+    # Run iTerm2 configuration script
+    if [ -f "$DOTFILES_DIR/scripts/configure-iterm2.sh" ]; then
+        echo "  → Running iTerm2 configuration script..."
+        "$DOTFILES_DIR/scripts/configure-iterm2.sh" || true
+    else
+        echo "  → Manual configuration needed:"
+        echo "     1. Open iTerm2 → Preferences (⌘,)"
+        echo "     2. Profiles → Text → Font"
+        echo "     3. Select: MesloLGS NF Regular 13"
+        echo "     4. See: ~/dotfiles/ITERM2-SETUP.md"
+    fi
 else
     echo "  ⚠️  iTerm2 not found. Install with: brew install --cask iterm2"
 fi

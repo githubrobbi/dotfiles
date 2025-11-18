@@ -77,9 +77,11 @@ brew bundle --file=Brewfile.current
 - **Brewfile.superset** - Complete tool list for brand new Mac (same as Brewfile)
 - **Brewfile.current** - AUTO-GENERATED minimal additions for existing setup
 - **README-TOOLS.md** - Comprehensive tool reference guide
+- **ITERM2-SETUP.md** - iTerm2 configuration guide (fonts, theme, settings)
 - **scripts/setup-new-mac.sh** - 🎯 **Main setup script** (orchestrates everything)
 - **scripts/generate-brewfile-current.sh** - Smart script to generate Brewfile.current
 - **scripts/update-all.sh** - Update all tools (brew, rust, cargo, node, python)
+- **scripts/configure-iterm2.sh** - Configure iTerm2 with Nerd Fonts for Powerlevel10k
 
 ## How It Works
 
@@ -162,6 +164,22 @@ cargo install <tool-name> --force
 cargo install cargo-update
 cargo install-update -a
 ```
+
+## iTerm2 Configuration
+
+### Quick Fix (If Icons Don't Show)
+```bash
+# Run the configuration script
+./scripts/configure-iterm2.sh
+
+# Or manually:
+# 1. iTerm2 → Preferences (⌘,)
+# 2. Profiles → Text → Font
+# 3. Select: MesloLGS NF Regular 13
+# 4. Restart iTerm2
+```
+
+See **ITERM2-SETUP.md** for detailed configuration guide.
 
 ## Git Signing
 
