@@ -1,8 +1,22 @@
+# macOS
 .DS_Store
+
+# ZSH runtime
 .zsh_history
 .zsh_sessions/
 .zcompdump*
+
+# Sensitive
 .ssh/
 .gnupg/
-Library/
 .env*
+
+# IDE
+.idea/
+.vscode/
+*.swp
+*.swo
+*~
+
+# System
+Library/

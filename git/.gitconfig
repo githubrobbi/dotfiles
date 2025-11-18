@@ -1,7 +1,6 @@
 [user]
 	name = Robert Nio
 	email = robert_nio@intuit.com
-	signingkey = TEST123456
 [core]
 	editor = code --wait
 	excludesfile = /Users/rnio/.gitignore
@@ -34,10 +33,6 @@
 	visual = !gitk
 [init]
 	defaultBranch = main
-[commit]
-	gpgsign = true
-[tag]
-	gpgsign = true
 [push]
 	autoSetupRemote = true
 [rebase]
