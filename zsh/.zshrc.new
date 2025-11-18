@@ -143,16 +143,21 @@ plugins=(
   git
   sudo
   command-not-found
-  
+
   # Modern tools
   fzf
   zoxide
-  
+
   # Completion
   docker
   docker-compose
   kubectl
-  
+
+  # Java/Kotlin
+  mvn
+  gradle
+  kotlin
+
   # Custom
   zsh-autosuggestions
 )

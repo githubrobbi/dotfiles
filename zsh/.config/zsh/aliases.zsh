@@ -135,6 +135,21 @@ alias mcp='mvn clean package'
 alias mct='mvn clean test'
 alias spotless='mvn spotless:apply'
 
+# Gradle
+alias g='gradle'
+alias gw='./gradlew'
+alias gwb='./gradlew build'
+alias gwc='./gradlew clean'
+alias gwcb='./gradlew clean build'
+alias gwt='./gradlew test'
+alias gwr='./gradlew run'
+alias gwi='./gradlew install'
+
+# Kotlin
+alias kt='kotlin'
+alias ktc='kotlinc'
+alias ktr='kotlin-repl'
+
 # ============================================================================
 # Productivity
 # ============================================================================
