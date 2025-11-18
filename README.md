@@ -37,16 +37,40 @@ stow zsh git bash npm yarn vscode
 ### Existing Mac (Minimal Install)
 ```bash
 cd ~/dotfiles
-brew bundle --file=Brewfile.current  # Only install missing tools
+
+# Generate Brewfile.current (checks what's already installed)
+./scripts/generate-brewfile-current.sh
+
+# Review what will be installed
+cat Brewfile.current
+
+# Install only missing tools
+brew bundle --file=Brewfile.current
 ```
 
 ## Files
 
-- **Brewfile** - Main Brewfile (superset)
-- **Brewfile.superset** - Complete tool list for brand new Mac
-- **Brewfile.current** - Minimal additions for existing setup
+- **Brewfile** - Main Brewfile (superset for new Macs)
+- **Brewfile.superset** - Complete tool list for brand new Mac (same as Brewfile)
+- **Brewfile.current** - AUTO-GENERATED minimal additions for existing setup
 - **README-TOOLS.md** - Comprehensive tool reference guide
+- **scripts/generate-brewfile-current.sh** - Smart script to generate Brewfile.current
 - **scripts/setup-new-mac.sh** - Automated setup script
+
+## How It Works
+
+The **dotfiles master approach** uses a smart script to make installations resilient:
+
+1. **Brewfile.superset** - The source of truth (assumes fresh Mac, nothing installed)
+2. **generate-brewfile-current.sh** - Reads superset, checks what's installed (brew, system, cargo)
+3. **Brewfile.current** - AUTO-GENERATED file with only missing packages
+
+This approach:
+- ✅ Checks brew database, system binaries, cargo packages, app bundles
+- ✅ Idempotent - run anytime, always accurate
+- ✅ Transparent - review before installing
+- ✅ No conflicts - skips tools installed outside brew
+- ✅ Works with cargo-first philosophy
 
 ## Contents
 
