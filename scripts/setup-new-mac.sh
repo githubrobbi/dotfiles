@@ -51,19 +51,24 @@ else
 fi
 
 # ============================================================================
-# 3. Stow dotfiles
+# 3. Stow dotfiles (with automatic backup)
 # ============================================================================
 echo ""
-echo "🔗 Symlinking dotfiles with stow..."
+echo "🔗 Symlinking dotfiles with stow (backing up existing files)..."
 cd "$DOTFILES_DIR"
 
-# Stow each directory
-for dir in zsh git bash npm yarn vscode; do
-    if [ -d "$dir" ]; then
-        echo "  → Stowing $dir"
-        stow -v "$dir" 2>&1 | grep -v "BUG in find_stowed_path"
-    fi
-done
+# Use safe-stow script for automatic backup
+if [ -f "$DOTFILES_DIR/scripts/safe-stow.sh" ]; then
+    "$DOTFILES_DIR/scripts/safe-stow.sh" zsh git bash npm yarn vscode
+else
+    # Fallback to manual stow if safe-stow not available
+    for dir in zsh git bash npm yarn vscode; do
+        if [ -d "$dir" ]; then
+            echo "  → Stowing $dir"
+            stow -R "$dir" 2>&1 | grep -v "BUG in find_stowed_path" || true
+        fi
+    done
+fi
 
 # ============================================================================
 # 4. Configure Git
@@ -88,10 +93,16 @@ fi
 echo ""
 echo "🐚 Configuring Shell..."
 
-# Set zsh as default shell
+# Set zsh as default shell (recommended)
 if [ "$SHELL" != "$(which zsh)" ]; then
     echo "  → Setting zsh as default shell"
     chsh -s "$(which zsh)"
+fi
+
+# Note: Bash 5+ is also configured and available
+if command -v bash &> /dev/null; then
+    bash_version=$(bash --version | head -n1 | grep -oE '[0-9]+\.[0-9]+' | head -n1)
+    echo "  ✅ Bash ${bash_version} configured (world-class setup)"
 fi
 
 # Initialize fzf
@@ -231,6 +242,29 @@ else
 fi
 
 # ============================================================================
+# 11. VSCode Configuration
+# ============================================================================
+echo ""
+echo "💻 VSCode Configuration..."
+
+if [ -d "/Applications/Visual Studio Code.app" ]; then
+    echo "  ✅ VSCode installed"
+
+    # Run VSCode configuration script
+    if [ -f "$DOTFILES_DIR/scripts/configure-vscode.sh" ]; then
+        echo "  → Running VSCode configuration script..."
+        "$DOTFILES_DIR/scripts/configure-vscode.sh" || true
+    else
+        echo "  → Manual configuration needed:"
+        echo "     1. Install VSCode CLI: code --install-extension"
+        echo "     2. Stow VSCode config: cd ~/dotfiles && stow vscode"
+        echo "     3. See: ~/dotfiles/VSCODE-SETUP.md"
+    fi
+else
+    echo "  ⚠️  VSCode not found. Install with: brew install --cask visual-studio-code"
+fi
+
+# ============================================================================
 # Done!
 # ============================================================================
 echo ""
@@ -243,18 +277,22 @@ echo "   ✅ Homebrew packages (via smart Brewfile.current)"
 echo "   ✅ Rust toolchain + cargo tools"
 echo "   ✅ Node.js + global packages"
 echo "   ✅ Python + pip/pipx"
-echo "   ✅ Dotfiles symlinked via stow"
+echo "   ✅ Dotfiles symlinked via stow (zsh, bash, git, vscode)"
 echo "   ✅ Git configured with SSH signing"
+echo "   ✅ Bash 5+ with world-class configuration"
 echo "   ✅ macOS defaults optimized"
+echo "   ✅ iTerm2 configured"
+echo "   ✅ VSCode configured with extensions"
 echo ""
 echo "🔄 Next steps:"
 echo "   1. Restart your terminal (or run: exec zsh)"
-echo "   2. Configure iTerm2 preferences:"
+echo "   2. Restart VSCode to apply all settings"
+echo "   3. Configure iTerm2 preferences:"
 echo "      → Preferences → General → Preferences"
 echo "      → Load preferences from: ~/.config/iterm2"
-echo "   3. Add SSH key to GitHub:"
-echo "      → gh ssh-key add ~/.ssh/id_ed25519.pub"
-echo "   4. Review machine-specific settings:"
+echo "   4. Add SSH key to GitHub:"
+echo "      → gh ssh-key add ~/.ssh/id_ed25519.pub --type signing"
+echo "   5. Review machine-specific settings:"
 echo "      → ~/.zshenv.local (create if needed)"
 echo ""
 echo "📚 Useful commands:"
@@ -262,6 +300,13 @@ echo "   → Update all tools:  ./scripts/update-all.sh"
 echo "   → Check what's installed: ./scripts/generate-brewfile-current.sh"
 echo "   → Rust tools: cargo install --list"
 echo "   → Brew tools: brew list"
+echo ""
+echo "📖 Documentation:"
+echo "   → Bash setup: ~/dotfiles/BASH-SETUP.md"
+echo "   → iTerm2 setup: ~/dotfiles/ITERM2-SETUP.md"
+echo "   → VSCode setup: ~/dotfiles/VSCODE-SETUP.md"
+echo "   → Zsh config: ~/dotfiles/ZSHRC-REFACTOR.md"
+echo "   → Git config: ~/dotfiles/GIT-REFACTOR.md"
 echo ""
 echo "🎉 Enjoy your new Mac setup!"
 echo ""

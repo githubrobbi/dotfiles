@@ -1,0 +1,48 @@
+[user]
+	name = Robert Nio
+	email = robert_nio@intuit.com
+[core]
+	editor = code --wait
+	excludesfile = /Users/rnio/.gitignore
+	ignorecase = False
+	autocrlf = input
+[merge]
+	tool = vscode
+[mergetool "vscode"]
+	cmd = code --wait $MERGED
+[diff]
+	tool = vscode
+[difftool "vscode"]
+	cmd = code --wait --diff $LOCAL $REMOTE
+[credential]
+	helper = osxkeychain
+[advice]
+	detachedHead = true
+	ignoredHook = false
+[http]
+	sslVerify = true
+[pull]
+	rebase = true
+[alias]
+	st = status
+	co = checkout
+	br = branch
+	ci = commit
+	unstage = reset HEAD --
+	last = log -1 HEAD
+	visual = !gitk
+[init]
+	defaultBranch = main
+[push]
+	autoSetupRemote = true
+[rebase]
+	autoStash = true
+[credential "https://github.intuit.com"]
+	helper = 
+	helper = !/opt/homebrew/bin/gh auth git-credential
+[credential "https://github.com"]
+	helper = 
+	helper = !/opt/homebrew/bin/gh auth git-credential
+[credential "https://gist.github.com"]
+	helper = 
+	helper = !/opt/homebrew/bin/gh auth git-credential

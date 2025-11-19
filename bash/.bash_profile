@@ -1,43 +1,54 @@
-# Robust repo-local Bash profile
-# - Guards missing tools (nvm, sdkman, brew)
-# - Idempotent PATH management
-# - Keeps noise low in non-interactive shells
+# ============================================================================
+# .bash_profile - Login Shell Configuration
+# ============================================================================
+# This file is sourced by bash for login shells
+# On macOS, Terminal.app and iTerm2 start login shells by default
+# ============================================================================
 
-# --- NVM (guarded) -----------------------------------------------------------
-if [ -s "$HOME/.nvm/nvm.sh" ]; then
-  . "$HOME/.nvm/nvm.sh"
+# Source .bashrc for interactive shells
+if [[ -f ~/.bashrc ]]; then
+  source ~/.bashrc
 fi
 
-# --- PATH helper -------------------------------------------------------------
-path_prepend() {
-  case ":$PATH:" in
-    *":$1:"*) ;; # already present
-    *) PATH="$1:$PATH" ;;
-  esac
-}
+# ============================================================================
+# Login Shell Specific Configuration
+# ============================================================================
 
-# AppFabric helpers (if present)
-[ -d "$HOME/.appfabric-bin" ] && path_prepend "$HOME/.appfabric-bin"
-if command -v appf-webtools-mgr >/dev/null 2>&1; then
-  alias atm=appf-webtools-mgr
-fi
-
-# --- SDKMAN (guarded) --------------------------------------------------------
-export SDKMAN_DIR="$HOME/.sdkman"
-[ -s "$SDKMAN_DIR/bin/sdkman-init.sh" ] && . "$SDKMAN_DIR/bin/sdkman-init.sh"
-
-# --- Homebrew shellenv (Apple/Intel, guarded) --------------------------------
-if [ -x /opt/homebrew/bin/brew ]; then
+# macOS: Add Homebrew to PATH early (for login shells)
+if [[ -f /opt/homebrew/bin/brew ]]; then
   eval "$(/opt/homebrew/bin/brew shellenv)"
-elif [ -x /usr/local/bin/brew ]; then
+elif [[ -f /usr/local/bin/brew ]]; then
   eval "$(/usr/local/bin/brew shellenv)"
 fi
 
-
-# --- Prefer JDK 11 if available --------------------------------------------
-if command -v /usr/libexec/java_home >/dev/null 2>&1; then
-  export JAVA_HOME="$(
-    /usr/libexec/java_home -v 11 2>/dev/null || /usr/libexec/java_home 2>/dev/null
-  )"
-  path_prepend "$JAVA_HOME/bin"
+# SSH Agent (if not already running)
+if [[ -z "$SSH_AUTH_SOCK" ]]; then
+  # Check for existing agent
+  if [[ -f "$HOME/.ssh/agent.env" ]]; then
+    source "$HOME/.ssh/agent.env" >/dev/null 2>&1
+  fi
+  
+  # Start new agent if needed
+  if ! ps -p "$SSH_AGENT_PID" >/dev/null 2>&1; then
+    mkdir -p "$HOME/.ssh"
+    ssh-agent -s > "$HOME/.ssh/agent.env"
+    source "$HOME/.ssh/agent.env" >/dev/null 2>&1
+    # Quietly load default keys
+    command -v ssh-add &>/dev/null && ssh-add -A >/dev/null 2>&1 || true
+  fi
 fi
+
+# ============================================================================
+# macOS Specific
+# ============================================================================
+
+# Set PATH for GUI applications (macOS)
+if [[ "$OSTYPE" == "darwin"* ]]; then
+  # Ensure /usr/local/bin is in PATH for GUI apps
+  launchctl setenv PATH "$PATH"
+fi
+
+# ============================================================================
+# End of .bash_profile
+# ============================================================================
+

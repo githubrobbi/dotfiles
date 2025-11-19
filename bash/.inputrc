@@ -1,0 +1,145 @@
+# ============================================================================
+# .inputrc - World-Class Readline Configuration
+# ============================================================================
+# Controls line editing behavior in bash and other readline-enabled programs
+# See: https://www.gnu.org/software/bash/manual/html_node/Readline-Init-File.html
+# ============================================================================
+
+# ============================================================================
+# General Settings
+# ============================================================================
+
+# Use Vi or Emacs mode (emacs is more common)
+set editing-mode emacs
+
+# Ring the bell (off = visual bell)
+set bell-style none
+
+# Completion settings
+set completion-ignore-case on           # Case-insensitive completion
+set completion-map-case on              # Treat hyphens and underscores as equivalent
+set show-all-if-ambiguous on            # Show completions immediately
+set show-all-if-unmodified on           # Show completions even if no partial match
+set menu-complete-display-prefix on     # Show prefix before cycling through completions
+set colored-stats on                    # Color completion based on file type
+set visible-stats on                    # Append file type indicator (/, @, etc.)
+set mark-symlinked-directories on       # Append / to symlinked directories
+set colored-completion-prefix on        # Color the common prefix in completions
+set skip-completed-text on              # Don't re-complete already completed text
+
+# History settings
+set history-preserve-point on           # Keep cursor position when navigating history
+set revert-all-at-newline on           # Undo all changes to history lines before returning
+
+# Display settings
+set echo-control-characters off         # Don't echo ^C, ^Z, etc.
+set enable-bracketed-paste on          # Handle pasted text properly
+set enable-keypad on                   # Enable keypad keys
+set expand-tilde on                    # Expand ~ to $HOME in completions
+set horizontal-scroll-mode off         # Wrap long lines instead of scrolling
+set input-meta on                      # Allow 8-bit input
+set output-meta on                     # Display 8-bit characters
+set convert-meta off                   # Don't convert 8-bit to ASCII
+set print-completions-horizontally off # List completions vertically
+
+# Completion query settings
+set completion-query-items 200         # Ask before showing more than 200 completions
+set page-completions on                # Page completion listings
+
+# ============================================================================
+# Key Bindings - Emacs Mode
+# ============================================================================
+
+# History search (most useful feature!)
+"\e[A": history-search-backward        # Up arrow - search history backward
+"\e[B": history-search-forward         # Down arrow - search history forward
+"\C-p": history-search-backward        # Ctrl+P - search history backward
+"\C-n": history-search-forward         # Ctrl+N - search history forward
+
+# Word navigation
+"\e[1;5C": forward-word                # Ctrl+Right - move forward one word
+"\e[1;5D": backward-word               # Ctrl+Left - move backward one word
+"\e[C": forward-word                   # Alt+Right - move forward one word
+"\e[D": backward-word                  # Alt+Left - move backward one word
+
+# Line navigation
+"\C-a": beginning-of-line              # Ctrl+A - go to beginning of line
+"\C-e": end-of-line                    # Ctrl+E - go to end of line
+"\e[H": beginning-of-line              # Home - go to beginning of line
+"\e[F": end-of-line                    # End - go to end of line
+
+# Deletion
+"\C-w": backward-kill-word             # Ctrl+W - delete word backward
+"\e[3~": delete-char                   # Delete - delete character forward
+"\C-d": delete-char                    # Ctrl+D - delete character forward
+"\C-k": kill-line                      # Ctrl+K - delete to end of line
+"\C-u": backward-kill-line             # Ctrl+U - delete to beginning of line
+
+# Completion
+"\t": menu-complete                    # Tab - cycle through completions
+"\e[Z": menu-complete-backward         # Shift+Tab - cycle backward through completions
+"\C-i": menu-complete                  # Ctrl+I - cycle through completions (same as Tab)
+
+# Undo/Redo
+"\C-_": undo                           # Ctrl+_ - undo
+"\C-x\C-u": undo                       # Ctrl+X Ctrl+U - undo
+
+# Clear screen
+"\C-l": clear-screen                   # Ctrl+L - clear screen
+
+# Accept line
+"\C-m": accept-line                    # Ctrl+M - accept line (Enter)
+"\C-j": accept-line                    # Ctrl+J - accept line
+
+# Transpose
+"\C-t": transpose-chars                # Ctrl+T - transpose characters
+"\et": transpose-words                 # Alt+T - transpose words
+
+# Case conversion
+"\eu": upcase-word                     # Alt+U - uppercase word
+"\el": downcase-word                   # Alt+L - lowercase word
+"\ec": capitalize-word                 # Alt+C - capitalize word
+
+# Yank (paste)
+"\C-y": yank                           # Ctrl+Y - yank (paste)
+"\ey": yank-pop                        # Alt+Y - cycle through kill ring
+
+# Macros
+"\C-x(": start-kbd-macro               # Ctrl+X ( - start recording macro
+"\C-x)": end-kbd-macro                 # Ctrl+X ) - stop recording macro
+"\C-xe": call-last-kbd-macro           # Ctrl+X E - execute last macro
+
+# ============================================================================
+# Application-Specific Settings
+# ============================================================================
+
+# FZF integration (if installed)
+$if Bash
+  # Ctrl+R - reverse history search with fzf
+  "\C-r": "\C-x1\e^\C-x2\e\C-r\C-x1\e^\C-x2"
+$endif
+
+# ============================================================================
+# macOS Specific
+# ============================================================================
+
+$if term=xterm-256color
+  # Option key as Meta (Alt) key on macOS
+  set meta-flag on
+  set input-meta on
+  set output-meta on
+  set convert-meta off
+$endif
+
+# ============================================================================
+# Color Scheme (LS_COLORS for completion)
+# ============================================================================
+
+# Use LS_COLORS for completion coloring
+set colored-stats on
+set visible-stats on
+
+# ============================================================================
+# End of .inputrc
+# ============================================================================
+

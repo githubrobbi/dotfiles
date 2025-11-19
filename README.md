@@ -25,14 +25,16 @@ cd ~/dotfiles
 1. ✅ Installs Homebrew (if needed)
 2. ✅ Generates Brewfile.current (smart detection)
 3. ✅ Installs only missing brew packages
-4. ✅ Symlinks dotfiles via stow
-5. ✅ Configures Git with SSH signing
-6. ✅ Installs Rust toolchain (via rustup)
-7. ✅ Installs all cargo tools (cargo-first!)
-8. ✅ Sets up Node.js + global packages
-9. ✅ Sets up Python + pip/pipx
-10. ✅ Configures macOS defaults
-11. ✅ Configures iTerm2
+4. ✅ **Backs up existing dotfiles** (automatic safety!)
+5. ✅ Symlinks dotfiles via stow
+6. ✅ Configures Git with SSH signing
+7. ✅ Installs Rust toolchain (via rustup)
+8. ✅ Installs all cargo tools (cargo-first!)
+9. ✅ Sets up Node.js + global packages
+10. ✅ Sets up Python + pip/pipx
+11. ✅ Configures macOS defaults
+12. ✅ Configures iTerm2
+13. ✅ Configures VSCode with extensions
 
 ### New Mac (Manual Setup)
 ```bash
@@ -77,11 +79,20 @@ brew bundle --file=Brewfile.current
 - **Brewfile.superset** - Complete tool list for brand new Mac (same as Brewfile)
 - **Brewfile.current** - AUTO-GENERATED minimal additions for existing setup
 - **README-TOOLS.md** - Comprehensive tool reference guide
+- **BACKUP-RESTORE.md** - 🛡️ **Backup & restore guide** (world-class safety)
+- **BASH-SETUP.md** - Bash configuration guide (world-class setup)
 - **ITERM2-SETUP.md** - iTerm2 configuration guide (fonts, theme, settings)
+- **VSCODE-SETUP.md** - VSCode configuration guide (settings, extensions, keybindings)
+- **ZSHRC-REFACTOR.md** - Zsh configuration documentation
+- **GIT-REFACTOR.md** - Git configuration documentation
 - **scripts/setup-new-mac.sh** - 🎯 **Main setup script** (orchestrates everything)
+- **scripts/safe-stow.sh** - 🛡️ **Safe stow** (backup before stowing)
+- **scripts/backup-dotfiles.sh** - Backup existing dotfiles
+- **scripts/restore-dotfiles.sh** - Restore from backup
 - **scripts/generate-brewfile-current.sh** - Smart script to generate Brewfile.current
 - **scripts/update-all.sh** - Update all tools (brew, rust, cargo, node, python)
 - **scripts/configure-iterm2.sh** - Configure iTerm2 with Nerd Fonts for Powerlevel10k
+- **scripts/configure-vscode.sh** - Configure VSCode with extensions and settings
 
 ## How It Works
 
@@ -100,7 +111,11 @@ This approach:
 
 ## Contents
 
-- `bash/`: Bash configuration
+- `bash/`: Bash 5+ configuration (world-class setup)
+  - `.bashrc` - Main configuration (300+ lines)
+  - `.bash_profile` - Login shell setup
+  - `.inputrc` - Readline enhancements
+  - `.config/bash/` - Modular configs (aliases, functions, work)
 - `git/`: `.gitconfig`, `.gitignore_global`
 - `npm/`: NPM configuration
 - `scripts/`: Setup and utility scripts
@@ -180,6 +195,118 @@ cargo install-update -a
 ```
 
 See **ITERM2-SETUP.md** for detailed configuration guide.
+
+## VSCode Configuration
+
+### Quick Setup
+```bash
+# Run the configuration script
+./scripts/configure-vscode.sh
+
+# Or manually:
+# 1. Stow VSCode config: cd ~/dotfiles && stow vscode
+# 2. Install extensions: code --install-extension <extension-id>
+# 3. Restart VSCode
+```
+
+**What you get:**
+- ✅ **485 lines** of world-class settings
+- ✅ **30+ extensions** (Rust, JS/TS, Python, Git, Docker, etc.)
+- ✅ **Catppuccin Mocha** theme (matches iTerm2!)
+- ✅ **MesloLGS NF** font (Nerd Font with ligatures)
+- ✅ **Format on save** for all languages
+- ✅ **Git integration** with SSH signing
+- ✅ **Custom keybindings** optimized for productivity
+- ✅ **Rust snippets** and language-specific configs
+
+See **VSCODE-SETUP.md** for detailed configuration guide.
+
+## Bash Configuration
+
+### Quick Setup
+```bash
+# Stow bash configuration
+cd ~/dotfiles && stow bash
+
+# Reload bash
+exec bash -l
+```
+
+**What you get:**
+- ✅ **300+ lines** of world-class .bashrc
+- ✅ **Modular configuration** (aliases, functions, work-specific)
+- ✅ **Modern CLI tools** integration (fzf, eza, bat, zoxide, ripgrep)
+- ✅ **XDG Base Directory** compliance
+- ✅ **Smart history** (50K lines, deduplication, timestamps)
+- ✅ **Readline enhancements** (.inputrc with 100+ improvements)
+- ✅ **Intelligent history search** (↑/↓ arrows search based on input)
+- ✅ **Bash 4+ features** (autocd, globstar, cdspell)
+- ✅ **Performance optimized** (lazy loading, guarded sourcing)
+
+See **BASH-SETUP.md** for detailed configuration guide.
+
+## 🛡️ Backup & Restore (World-Class Safety)
+
+### Quick Start
+
+```bash
+# Safe stow with automatic backup
+cd ~/dotfiles
+./scripts/safe-stow.sh
+
+# List all backups
+./scripts/restore-dotfiles.sh --list
+
+# Restore from backup
+./scripts/restore-dotfiles.sh 20251119-162500
+```
+
+**What you get:**
+- ✅ **Automatic backups** before any stow operation
+- ✅ **Timestamped snapshots** (never lose data)
+- ✅ **Easy rollback** with one command
+- ✅ **Dry-run mode** to preview changes
+- ✅ **Manifest tracking** of what was backed up
+- ✅ **Smart detection** (skips already-symlinked files)
+
+### Common Workflows
+
+**Try new dotfiles safely:**
+```bash
+# 1. Backup current config
+./scripts/backup-dotfiles.sh
+
+# 2. Apply new dotfiles
+./scripts/safe-stow.sh bash
+
+# 3. Test it
+exec bash -l
+
+# 4. Restore if you don't like it
+./scripts/restore-dotfiles.sh <session-name>
+```
+
+**Preview before applying:**
+```bash
+# See what would be backed up
+./scripts/backup-dotfiles.sh --dry-run
+
+# See what would be stowed
+./scripts/safe-stow.sh --dry-run
+```
+
+**Backup structure:**
+```
+~/.dotfiles-backup/
+├── 20251119-162500/    # Timestamped session
+│   ├── manifest.txt    # What was backed up
+│   ├── bash/
+│   ├── zsh/
+│   └── git/
+└── 20251119-143000/    # Another session
+```
+
+See **BACKUP-RESTORE.md** for comprehensive guide.
 
 ## Git Signing
 

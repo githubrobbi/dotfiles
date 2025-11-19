@@ -1,0 +1,29 @@
+# ============================================================================
+# Personal Git Configuration (with SSH Commit Signing)
+# ============================================================================
+# This config is loaded for:
+#   - ~/Private/Github/* (personal repos)
+#   - ~/dotfiles/ (this repo)
+# ============================================================================
+
+[user]
+	name = Robert Nio
+	email = 50460704+githubrobbi@users.noreply.github.com
+	signingkey = ~/.ssh/id_ed25519.pub
+
+[commit]
+	# Sign all commits with SSH key
+	gpgsign = true
+
+[tag]
+	# Sign all tags with SSH key
+	gpgsign = true
+
+[gpg]
+	# Use SSH for signing instead of GPG
+	format = ssh
+
+[gpg "ssh"]
+	# Let git use ssh-agent for signing
+	allowedSignersFile = ~/.config/git/allowed_signers
+

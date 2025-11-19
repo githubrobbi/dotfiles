@@ -1,48 +1,308 @@
+# ============================================================================
+# Git Configuration - World-Class Setup
+# ============================================================================
+# This is the main gitconfig for work repos (Intuit)
+# Personal repos use .gitconfig-personal (with commit signing)
+# ============================================================================
+
 [user]
 	name = Robert Nio
 	email = robert_nio@intuit.com
+
 [core]
 	editor = code --wait
-	excludesfile = /Users/rnio/.gitignore
-	ignorecase = False
+	excludesfile = ~/.gitignore_global
+	ignorecase = false
 	autocrlf = input
+	# Performance: Use filesystem monitor for large repos
+	fsmonitor = true
+	# Better whitespace handling
+	whitespace = trailing-space,space-before-tab
+	# Faster operations
+	preloadindex = true
+	# Parallel operations (use all CPU cores)
+	packedGitLimit = 512m
+	packedGitWindowSize = 512m
+
+[init]
+	defaultBranch = main
+
+[pull]
+	# Always rebase instead of merge to keep history clean
+	rebase = true
+
+[push]
+	# Automatically set up remote tracking
+	autoSetupRemote = true
+	# Push current branch to branch with same name
+	default = current
+	# Push tags along with commits
+	followTags = true
+
+[fetch]
+	# Automatically prune deleted remote branches
+	prune = true
+	# Prune tags too
+	pruneTags = false
+	# Parallel fetch (faster)
+	parallel = 0
+
+[rebase]
+	# Automatically stash before rebase
+	autoStash = true
+	# Automatically squash fixup commits
+	autoSquash = true
+	# Update refs for rebased branches
+	updateRefs = true
+
 [merge]
 	tool = vscode
+	# Better conflict markers (show common ancestor)
+	conflictStyle = zdiff3
+	# Automatically resolve conflicts when possible
+	ff = false
+
+[mergetool]
+	# Don't create .orig backup files
+	keepBackup = false
+	# Don't prompt before opening merge tool
+	prompt = false
+
 [mergetool "vscode"]
-	cmd = code --wait $MERGED
+	cmd = code --wait --merge $REMOTE $LOCAL $BASE $MERGED
+
 [diff]
 	tool = vscode
+	# Use histogram algorithm (better diffs)
+	algorithm = histogram
+	# Detect renames and copies
+	renames = copies
+	# Show submodule changes
+	submodule = log
+	# Color moved lines differently
+	colorMoved = default
+	# Better word diff
+	wordRegex = [^[:space:]]
+
+[difftool]
+	prompt = false
+
 [difftool "vscode"]
 	cmd = code --wait --diff $LOCAL $REMOTE
+
+[log]
+	# Show dates in relative format (2 days ago)
+	date = relative
+	# Abbreviate commit hashes
+	abbrevCommit = true
+	# Follow file renames in log
+	follow = true
+
+[status]
+	# Show submodule summary
+	submoduleSummary = true
+	# Show untracked files in untracked directories
+	showUntrackedFiles = all
+
+[branch]
+	# Sort branches by most recent commit
+	sort = -committerdate
+	# Automatically set up tracking
+	autoSetupMerge = always
+
+[tag]
+	# Sort tags by version number
+	sort = -version:refname
+
+[commit]
+	# Show diff in commit message editor
+	verbose = true
+	# Template for commit messages (optional)
+	# template = ~/.gitmessage
+
+[rerere]
+	# Reuse recorded resolution of conflicted merges
+	enabled = true
+	# Auto-stage resolved conflicts
+	autoUpdate = true
+
+[help]
+	# Autocorrect typos after 1.5 seconds
+	autocorrect = 15
+
+[color]
+	ui = auto
+	branch = auto
+	diff = auto
+	status = auto
+	interactive = auto
+
+[color "branch"]
+	current = yellow reverse
+	local = yellow
+	remote = green
+
+[color "diff"]
+	meta = yellow bold
+	frag = magenta bold
+	old = red bold
+	new = green bold
+	whitespace = red reverse
+
+[color "status"]
+	added = green
+	changed = yellow
+	untracked = red
+
 [credential]
 	helper = osxkeychain
-[advice]
-	detachedHead = true
-	ignoredHook = false
+
+[credential "https://github.intuit.com"]
+	helper = 
+	helper = !/opt/homebrew/bin/gh auth git-credential
+
+[credential "https://github.com"]
+	helper = 
+	helper = !/opt/homebrew/bin/gh auth git-credential
+
+[credential "https://gist.github.com"]
+	helper = 
+	helper = !/opt/homebrew/bin/gh auth git-credential
+
 [http]
 	sslVerify = true
-[pull]
-	rebase = true
+	# Increase buffer for large repos
+	postBuffer = 524288000
+
+[advice]
+	detachedHead = false
+	ignoredHook = false
+	statusHints = true
+	commitBeforeMerge = true
+
+[pack]
+	# Use all CPU cores for packing
+	threads = 0
+	# Better compression
+	windowMemory = 512m
+
+[feature]
+	# Enable experimental features
+	manyFiles = true
+
+[maintenance]
+	# Auto-optimize repos
+	auto = true
+	strategy = incremental
+
+# ============================================================================
+# URL Shortcuts
+# ============================================================================
+
+[url "git@github.com:"]
+	insteadOf = gh:
+	pushInsteadOf = gh:
+
+[url "git@github.intuit.com:"]
+	insteadOf = ghe:
+	pushInsteadOf = ghe:
+
+[url "https://github.com/"]
+	insteadOf = https://gh/
+
+# ============================================================================
+# Aliases - World-Class Productivity
+# ============================================================================
+
 [alias]
+	# Basic shortcuts
 	st = status
 	co = checkout
 	br = branch
 	ci = commit
+	cp = cherry-pick
+	
+	# Commit shortcuts
+	cm = commit -m
+	ca = commit --amend
+	can = commit --amend --no-edit
+	cane = commit --amend --no-edit --allow-empty
+	
+	# Staging shortcuts
+	a = add
+	aa = add --all
+	ap = add --patch
 	unstage = reset HEAD --
-	last = log -1 HEAD
-	visual = !gitk
-[init]
-	defaultBranch = main
-[push]
-	autoSetupRemote = true
-[rebase]
-	autoStash = true
-[credential "https://github.intuit.com"]
-	helper = 
-	helper = !/opt/homebrew/bin/gh auth git-credential
-[credential "https://github.com"]
-	helper = 
-	helper = !/opt/homebrew/bin/gh auth git-credential
-[credential "https://gist.github.com"]
-	helper = 
-	helper = !/opt/homebrew/bin/gh auth git-credential
+	
+	# Branch management
+	branches = branch -a
+	brd = branch -d
+	brD = branch -D
+	brc = checkout -b
+	brm = branch -m
+	
+	# Status shortcuts
+	s = status --short --branch
+	ss = status
+	
+	# Diff shortcuts
+	d = diff
+	dc = diff --cached
+	ds = diff --staged
+	dw = diff --word-diff
+	
+	# Log shortcuts
+	l = log --oneline --decorate --graph -20
+	ll = log --oneline --decorate --graph
+	la = log --oneline --decorate --graph --all
+	lg = log --graph --pretty=format:'%Cred%h%Creset -%C(yellow)%d%Creset %s %Cgreen(%cr) %C(bold blue)<%an>%Creset' --abbrev-commit
+	lga = log --graph --pretty=format:'%Cred%h%Creset -%C(yellow)%d%Creset %s %Cgreen(%cr) %C(bold blue)<%an>%Creset' --abbrev-commit --all
+	last = log -1 HEAD --stat
+	recent = for-each-ref --count=10 --sort=-committerdate refs/heads/ --format='%(refname:short)'
+	
+	# Stash shortcuts
+	sl = stash list
+	sp = stash pop
+	ss = stash save
+	sa = stash apply
+	sd = stash drop
+	
+	# Undo shortcuts
+	undo = reset --soft HEAD^
+	undo-hard = reset --hard HEAD^
+	uncommit = reset --soft HEAD^
+	
+	# Cleanup shortcuts
+	cleanup = !git branch --merged | grep -v '\\*\\|main\\|master\\|develop' | xargs -n 1 git branch -d
+	prune-all = !git remote prune origin && git gc --aggressive --prune=now
+	
+	# Show shortcuts
+	contributors = shortlog --summary --numbered --email
+	aliases = config --get-regexp alias
+	
+	# Workflow shortcuts
+	sync = !git fetch --all --prune && git pull --rebase
+	update = !git fetch --all --prune && git rebase origin/main
+	publish = !git push -u origin $(git branch --show-current)
+	unpublish = !git push origin :$(git branch --show-current)
+	
+	# Find shortcuts
+	find = !git ls-files | grep -i
+	grep = grep -Ii
+	
+	# Misc
+	root = rev-parse --show-toplevel
+	exec = "!exec "
+
+# ============================================================================
+# Conditional Includes - Personal repos with commit signing
+# ============================================================================
+
+# Personal repos (with SSH signing)
+[includeIf "gitdir:~/Private/Github/"]
+	path = ~/.gitconfig-personal
+
+# Dotfiles repo (with SSH signing)
+[includeIf "gitdir:~/dotfiles/"]
+	path = ~/.gitconfig-personal
+
