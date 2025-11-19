@@ -17,7 +17,7 @@ alias -- -='cd -'
 # ============================================================================
 # Git Aliases (Enhanced)
 # ============================================================================
-alias g='git'
+# Note: 'g' is reserved for go_to navigation (see work.zsh)
 alias ga='git add'
 alias gaa='git add --all'
 alias gc='git commit -v'
@@ -92,7 +92,8 @@ alias copy='pbcopy'
 alias paste='pbpaste'
 
 # Quick file operations
-alias mkdir='mkdir -p'
+# Note: Don't alias mkdir to 'mkdir -p' - it causes recursive expansion issues
+# Use 'md' for mkdir -p instead
 alias md='mkdir -p'
 alias rd='rmdir'
 
@@ -136,7 +137,7 @@ alias mct='mvn clean test'
 alias spotless='mvn spotless:apply'
 
 # Gradle
-alias g='gradle'
+# Note: 'g' is reserved for go_to navigation (see work.zsh)
 alias gw='./gradlew'
 alias gwb='./gradlew build'
 alias gwc='./gradlew clean'

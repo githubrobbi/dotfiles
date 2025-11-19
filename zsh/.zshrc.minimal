@@ -1,0 +1,94 @@
+#!/usr/bin/env zsh
+# Minimal .zshrc for debugging
+
+# ============================================================================
+# 1. PATH Setup (FIRST - before anything else)
+# ============================================================================
+
+# Homebrew (Apple Silicon)
+if [[ -f /opt/homebrew/bin/brew ]]; then
+  eval "$(/opt/homebrew/bin/brew shellenv)"
+fi
+
+# Add local bins
+export PATH="$HOME/bin:$HOME/.local/bin:$PATH"
+export PATH="$HOME/.cargo/bin:$PATH"
+
+# ============================================================================
+# 2. Basic Environment
+# ============================================================================
+
+export EDITOR=vim
+export VISUAL=vim
+export LANG=en_US.UTF-8
+export LC_ALL=en_US.UTF-8
+
+# History
+HISTFILE=~/.zsh_history
+HISTSIZE=10000
+SAVEHIST=10000
+setopt SHARE_HISTORY
+setopt HIST_IGNORE_DUPS
+setopt HIST_IGNORE_SPACE
+
+# ============================================================================
+# 3. Simple Repository Navigation (NO FANCY FEATURES)
+# ============================================================================
+
+# Repository shortcuts
+alias gt='cd ~/Private/GitHub/ttapi'
+alias gs='cd ~/GitHub/spend-mgmt'
+alias gi='cd ~/GitHub/idx-triage-svc'
+alias gd='cd ~/dotfiles'
+
+# ============================================================================
+# 4. Basic Aliases (SAFE ONES ONLY)
+# ============================================================================
+
+# Navigation
+alias ..='cd ..'
+alias ...='cd ../..'
+alias ~='cd ~'
+
+# List files
+alias l='ls -lah'
+alias ll='ls -lh'
+alias la='ls -lAh'
+
+# Safety
+alias cp='cp -i'
+alias mv='mv -i'
+
+# Git basics
+alias gst='git status'
+alias gco='git checkout'
+alias gp='git pull'
+
+# ============================================================================
+# 5. Prompt (Simple)
+# ============================================================================
+
+# Simple prompt showing directory and git branch
+autoload -Uz vcs_info
+precmd() { vcs_info }
+setopt PROMPT_SUBST
+zstyle ':vcs_info:git:*' formats ' (%b)'
+PROMPT='%F{blue}%~%f%F{yellow}${vcs_info_msg_0_}%f %# '
+
+# ============================================================================
+# 6. Completions (Basic)
+# ============================================================================
+
+autoload -Uz compinit
+compinit
+
+# Case-insensitive completion
+zstyle ':completion:*' matcher-list 'm:{a-zA-Z}={A-Za-z}'
+
+# ============================================================================
+# END OF MINIMAL CONFIG
+# ============================================================================
+
+echo "✅ Minimal .zshrc loaded successfully"
+echo "📂 Repository shortcuts: gt (ttapi), gs (spend-mgmt), gi (idx-triage-svc), gd (dotfiles)"
+

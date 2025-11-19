@@ -5,23 +5,175 @@
 # ============================================================================
 
 # ============================================================================
-# GitJump Helpers
+# Quick Repository Navigation with Fuzzy Finder
+# ============================================================================
+# Interactive repository switcher with frecency tracking
+# Usage:
+#   g           → Interactive fuzzy finder (sorted by usage frequency)
+#   g <shortcut> → Direct jump (e.g., "g t" → ttapi)
 # ============================================================================
 
-gg_func() {
-  local repo_path
-  repo_path=$(go_to cd "$@")
-  echo -e "\nWir gehen zu: $repo_path\n"
-  echo cd "$repo_path"
-  cd "$repo_path"
+# Frecency tracking file
+REPO_FRECENCY_FILE="${XDG_DATA_HOME:-$HOME/.local/share}/repo-frecency.txt"
+
+# Repository mapping (shortcut → path)
+# Work repos (Intuit): ~/GitHub/*
+# Personal repos: ~/Private/GitHub/*
+declare -A REPO_MAP=(
+  # Work repositories (Intuit)
+  [s]="$HOME/GitHub/spend-mgmt"
+  [i]="$HOME/GitHub/idx-triage-svc"
+  [e]="$HOME/GitHub/ets-event-processor"
+  [x]="$HOME/GitHub/exp-mgmt-service"
+  [a]="$HOME/GitHub/accounting-automation"
+  [u]="$HOME/GitHub/accounting-automation-ui"
+  [g]="$HOME/GitHub/globalid"
+
+  # Personal repositories
+  [t]="$HOME/Private/GitHub/ttapi"
+  [c]="$HOME/Private/GitHub/calculator"
+  [d]="$HOME/dotfiles"
+  [p]="$HOME/Private/GitHub"
+)
+
+# Update frecency score for a repository
+__update_frecency() {
+  local repo="$1"
+  local frecency_file="$REPO_FRECENCY_FILE"
+
+  # Create directory and file if they don't exist
+  local frecency_dir=$(/usr/bin/dirname "$frecency_file")
+  [[ ! -d "$frecency_dir" ]] && /bin/mkdir -p "$frecency_dir"
+  [[ ! -f "$frecency_file" ]] && /usr/bin/touch "$frecency_file"
+
+  # Get current timestamp
+  local now=$(/bin/date +%s)
+
+  # Read existing scores
+  local temp_file=$(/usr/bin/mktemp)
+  local found=0
+
+  while IFS='|' read -r path count last_access; do
+    if [[ "$path" == "$repo" ]]; then
+      # Increment count and update timestamp
+      builtin echo "$path|$((count + 1))|$now" >> "$temp_file"
+      found=1
+    else
+      builtin echo "$path|$count|$last_access" >> "$temp_file"
+    fi
+  done < "$frecency_file"
+
+  # Add new entry if not found
+  if [[ $found -eq 0 ]]; then
+    builtin echo "$repo|1|$now" >> "$temp_file"
+  fi
+
+  /bin/mv "$temp_file" "$frecency_file"
 }
 
-local_func() {
-  go_to local "$@"
+# Get sorted repository list by frecency
+__get_sorted_repos() {
+  local frecency_file="$REPO_FRECENCY_FILE"
+  local now=$(/bin/date +%s)
+  local temp_scores=$(/usr/bin/mktemp)
+
+  # Calculate frecency scores for all repos
+  for key in ${(k)REPO_MAP}; do
+    local repo_path="${REPO_MAP[$key]}"
+    local name=$(/usr/bin/basename "$repo_path")
+    local count=0
+    local last_access=0
+    local score=0
+
+    # Get stats from frecency file
+    if [[ -f "$frecency_file" ]]; then
+      while IFS='|' read -r fpath fcount flast; do
+        if [[ "$fpath" == "$repo_path" ]]; then
+          count=$fcount
+          last_access=$flast
+          break
+        fi
+      done < "$frecency_file"
+    fi
+
+    # Calculate score: frequency * recency_weight
+    # Recency weight: 1.0 for today, decays over time
+    local age=$((now - last_access))
+    local days=$((age / 86400))
+    local recency_weight=$(/usr/bin/awk "BEGIN {print 1.0 / (1.0 + $days * 0.1)}")
+    score=$(/usr/bin/awk "BEGIN {print $count * $recency_weight}")
+
+    # Format: score|shortcut|name|repo_path
+    builtin printf "%.2f|%s|%s|%s\n" "$score" "$key" "$name" "$repo_path" >> "$temp_scores"
+  done
+
+  # Sort by score (descending) and format for fzf
+  /usr/bin/sort -t'|' -k1 -rn "$temp_scores" | while IFS='|' read -r score key name repo_path; do
+    builtin printf "%-3s  %s\n" "$key" "$name"
+  done
+
+  /bin/rm -f "$temp_scores"
 }
 
-alias g='gg_func'
-alias l='local_func'
+# Navigation function
+# Unalias 'g' if it exists (to avoid conflicts with git/gradle aliases)
+unalias g 2>/dev/null
+
+g() {
+  # Direct shortcut provided
+  if [[ $# -gt 0 ]]; then
+    local shortcut="$1"
+    local target="${REPO_MAP[$shortcut]}"
+
+    if [[ -z "$target" ]]; then
+      echo "❌ Unknown shortcut: '$shortcut'"
+      echo "💡 Run 'g' without arguments for interactive selection"
+      return 1
+    fi
+
+    if [[ ! -d "$target" ]]; then
+      echo "❌ Directory not found: $target"
+      return 1
+    fi
+
+    # NOTE: Frecency tracking disabled due to shell corruption issues
+    # __update_frecency "$target"
+    echo "📂 → $(/usr/bin/basename "$target")"
+    builtin cd "$target"
+    return 0
+  fi
+
+  # Interactive mode with fzf
+  if ! command -v fzf &>/dev/null; then
+    echo "❌ fzf not found. Install with: brew install fzf"
+    return 1
+  fi
+
+  # Get sorted list and show in fzf
+  local selection=$(__get_sorted_repos | fzf \
+    --height=40% \
+    --reverse \
+    --border \
+    --prompt="📂 Repository: " \
+    --header="Select repository (sorted by usage)" \
+    --preview="echo {} | awk '{print \$2}' | xargs -I{} ls -la \$HOME/GitHub/{} \$HOME/Private/GitHub/{} \$HOME/{} 2>/dev/null | head -20" \
+    --preview-window=right:50%:wrap)
+
+  if [[ -z "$selection" ]]; then
+    return 0  # User cancelled
+  fi
+
+  # Extract shortcut from selection
+  local shortcut=$(builtin echo "$selection" | /usr/bin/awk '{print $1}')
+  local target="${REPO_MAP[$shortcut]}"
+
+  if [[ -n "$target" && -d "$target" ]]; then
+    # NOTE: Frecency tracking disabled due to shell corruption issues
+    # __update_frecency "$target"
+    echo "📂 → $(/usr/bin/basename "$target")"
+    builtin cd "$target"
+  fi
+}
 
 # ============================================================================
 # App Aliases

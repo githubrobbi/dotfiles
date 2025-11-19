@@ -142,11 +142,13 @@ plugins=(
   # Core
   git
   sudo
-  command-not-found
+  # NOTE: command-not-found plugin is DISABLED - it has a bug that breaks command execution
+  # The Homebrew handler uses "$*" instead of "$1", causing "brew install foo" to be
+  # treated as a single command name instead of "brew" with arguments "install foo"
 
   # Modern tools
   fzf
-  zoxide
+  # NOTE: zoxide is initialized manually below (line ~200) to avoid conflicts
 
   # Completion
   docker
@@ -159,10 +161,18 @@ plugins=(
 
   # Custom
   zsh-autosuggestions
+  zsh-syntax-highlighting
 )
 
 # Load Oh My Zsh
 source "$ZSH/oh-my-zsh.sh"
+
+# CRITICAL FIX: Unalias problematic oh-my-zsh aliases that break command execution
+# The grep alias from oh-my-zsh/lib/grep.zsh causes "command not found" errors
+# when commands try to use grep internally (like brew, git, etc.)
+unalias grep 2>/dev/null
+unalias egrep 2>/dev/null
+unalias fgrep 2>/dev/null
 
 # ============================================================================
 # 6. Modern CLI Tool Integrations
@@ -190,15 +200,18 @@ if command -v fzf &>/dev/null; then
 fi
 
 # zoxide - Smarter cd
-if command -v zoxide &>/dev/null; then
-  eval "$(zoxide init zsh)"
-fi
+# NOTE: Disabled due to command execution issues with \command prefix
+# The zoxide hook fails to find the zoxide binary even though it exists
+# if command -v zoxide &>/dev/null; then
+#   eval "$(zoxide init zsh)"
+# fi
 
 # direnv - Per-directory environment
-if command -v direnv &>/dev/null; then
-  export DIRENV_LOG_FORMAT=""  # Quiet
-  eval "$(direnv hook zsh)"
-fi
+# NOTE: Disabled due to command execution issues
+# if command -v direnv &>/dev/null; then
+#   export DIRENV_LOG_FORMAT=""  # Quiet
+#   eval "$(direnv hook zsh)"
+# fi
 
 # bat - Better cat
 if command -v bat &>/dev/null; then
@@ -240,8 +253,14 @@ export RUST_LOG="${RUST_LOG:-error,tt=off}"
 # Node.js
 export NODE_EXTRA_CA_CERTS=~/Documents/caadmin.netskope.com.pem
 
-# Docker/Podman
-export DOCKER_HOST="$HOME/.local/share/containers/podman/machine/applehv/podman.sock"
+# Docker/Podman - Dynamic socket path
+if command -v podman &>/dev/null; then
+  # Get the active machine's socket dynamically
+  PODMAN_SOCK=$(podman machine inspect --format '{{.ConnectionInfo.PodmanSocket.Path}}' 2>/dev/null)
+  if [[ -n "$PODMAN_SOCK" ]]; then
+    export DOCKER_HOST="unix://$PODMAN_SOCK"
+  fi
+fi
 export TESTCONTAINERS_ENABLED=false
 
 # Maven/Nexus
